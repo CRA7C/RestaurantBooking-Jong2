@@ -9,6 +9,8 @@ ON_THE_HOUR = datetime.strptime("2021/03/26 09:00", "%Y/%m/%d %H:%M")
 CUSTOMER = Customer("Fake Name", "010-1234-5678")
 
 CAPACITY_PER_HOUR = 3
+UNDER_CAPACITY = 1
+
 NUMBER_OF_PEOPLE = 1
 
 
@@ -31,7 +33,14 @@ class BookingSchedulerTest(unittest.TestCase):
         self.assertTrue(self.booking_scheduler.has_schedule(schedule))
 
     def test_시간대별_인원제한이_있다_같은_시간대에_Capacity_초과할_경우_예외발생(self):
-        pass
+        schedule = Schedule(ON_THE_HOUR, CAPACITY_PER_HOUR, CUSTOMER)
+        self.booking_scheduler.add_schedule(schedule)
+
+        with self.assertRaises(ValueError) as context:
+            new_schedule = Schedule(ON_THE_HOUR, UNDER_CAPACITY, CUSTOMER)
+            self.booking_scheduler.add_schedule(new_schedule)
+
+        self.assertEqual("Number of people is over restaurant capacity per hour", str(context.exception))
 
     def test_시간대별_인원제한이_있다_같은_시간대가_다르면_Capacity_차있어도_스케쥴_추가_성공(self):
         pass
